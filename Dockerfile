@@ -2,22 +2,14 @@
 # DOCKER-VERSION  0.7.3
 # AUTHOR:         Sam Alba <sam@docker.com>
 # DESCRIPTION:    Image with docker-registry project and dependecies
-# TO_BUILD:       docker build -rm -t registry .
+# TO_BUILD:       docker build --rm -t registry .
 # TO_RUN:         docker run -p 5000:5000 registry
 
-# Latest Ubuntu LTS
-FROM ubuntu:14.04
+FROM centos:centos7
+MAINTAINER Jono Wells <_oj.io>
 
-# Update
-RUN apt-get update \
-# Install pip
-    && apt-get install -y \
-        python-pip \
-# Install deps for backports.lmza (python2 requires it)
-        python-dev \
-        liblzma-dev \
-        libevent1-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN yum -y update; yum -y install epel-release; yum -y clean all
+RUN yum -y install gcc patch python-pip python-devel python-backports-lzma libevent-devel; yum -y clean all
 
 COPY . /docker-registry
 COPY ./config/boto.cfg /etc/boto.cfg
@@ -37,4 +29,4 @@ ENV SETTINGS_FLAVOR dev
 
 EXPOSE 5000
 
-CMD ["docker-registry"]
+CMD [ "docker-registry" ]
